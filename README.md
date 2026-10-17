@@ -191,10 +191,10 @@ ComplianceMode (inheritance)
 
 ## Compliance Score
 
-Compliance mode calculates score based on findings:
-- Total CIS checks: ~50 controls
-- Compliance Score: (Passed / Total) × 100%
-- Severity weighting: CRITICAL > HIGH > MEDIUM > LOW
+Compliance mode scores by actual checks executed, not by finding count:
+- Each check returns pass / fail / error (error = could not evaluate, e.g. access denied)
+- Compliance Score: Passed / (Passed + Failed) × 100%
+- Errored checks are excluded from the ratio so missing permissions don't deflate the score
 
 Example output:
 ```
@@ -205,13 +205,18 @@ Total Findings: 12
   LOW: 1
 
 CIS Controls Affected: 8
-Compliance Score: 76.0%
+
+Checks Passed:  28
+Checks Failed:  9
+Checks Errored: 2 (excluded from score)
+
+Compliance Score: 75.7%
 ```
 
 ## Security
 
 - Yes: Read-only operations (no modifications)
-- Yes: SSL verification disabled for corporate proxies
+- Yes: TLS verification ON by default; use `--insecure` only for intercepting/corporate proxies
 - Yes: No credentials stored or logged
 - Yes: CIS Benchmark aligned
 - **WARNING:** Attack mode requires written authorization
@@ -226,5 +231,10 @@ MIT
 Unauthorized testing may violate laws and policies.
 
 ## Version
+
+2.1 - Performance pass: parallel multi-region/multi-resource scanning (`--workers`),
+      cached credential report / bucket / user lookups, full pagination, opt-in
+      TLS bypass (`--insecure`), honest pass/fail compliance score, `--output` wired.
+      Detection logic per check unchanged from 2.0.
 
 2.0 - Unified dual-mode architecture
